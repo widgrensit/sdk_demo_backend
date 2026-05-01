@@ -14,11 +14,15 @@ docker compose up -d
 
 The backend listens on `http://localhost:8084` (HTTP + WebSocket on `/ws`).
 
-Verify:
+Verify by registering a throwaway player:
 
 ```bash
-curl http://localhost:8084/health
+curl -X POST http://localhost:8084/api/v1/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"smoke","password":"smoke1234","display_name":"Smoke"}'
 ```
+
+You should get a `200` with a `player_id` and `session_token`.
 
 ## What it does
 
