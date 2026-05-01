@@ -19,13 +19,14 @@ local function clamp(v, lo, hi)
     return v
 end
 
-function init_state(_opts)
+function init(_config)
     return {
         arena_w = ARENA_W,
         arena_h = ARENA_H,
         players = {},
         elapsed_ms = 0,
-        phase = "playing"
+        phase = "playing",
+        _finished = false
     }
 end
 
@@ -67,18 +68,16 @@ function tick(state)
 
     if state.elapsed_ms >= DURATION_MS then
         state.phase = "finished"
+        state._finished = true
+        state._result = {
+            duration_ms = state.elapsed_ms,
+            players = state.players
+        }
     end
 
     return state
 end
 
-function is_finished(state)
-    return state.phase == "finished"
-end
-
-function result(state)
-    return {
-        duration_ms = state.elapsed_ms,
-        players = state.players
-    }
+function get_state(_player_id, state)
+    return state
 end
