@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sdk_demo_backend
+    ports:
+      - "5436:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  asobi:
+    image: ghcr.io/widgrensit/asobi_lua:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8084:8084"
+    volumes:
+      - ./lua:/app/game:ro
+    environment:
+      ASOBI_PORT: "8084"
+      ASOBI_NODE_HOST: "127.0.0.1"
+      ERLANG_COOKIE: sdk_demo_backend_dev
+      ASOBI_DB_HOST: postgres
+      ASOBI_DB_NAME: sdk_demo_backend
+      ASOBI_DB_USER: postgres
+      ASOBI_DB_PASSWORD: postgres
+
+volumes:
+  pgdata:
