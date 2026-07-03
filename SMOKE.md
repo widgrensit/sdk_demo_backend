@@ -27,8 +27,8 @@ The smoke test implements **one** flow with three observable scenarios. Total ex
 
 For two distinct players (`A` and `B`):
 
-1. `POST /api/v1/auth/register` with a unique username, password `smoke_pw_12345`, and the username as display name. Expect `201` (or `200`) with a session token.
-2. Open a WebSocket to `/ws` with the session token (header / query / first-message — whichever the SDK supports).
+1. `POST /api/v1/auth/register` with a unique username, password `smoke_pw_12345`, and the username as display name. Expect `200` with a `player_id`, `access_token`, and `refresh_token`.
+2. Open a WebSocket to `/ws` with the `access_token` (header / query / first-message `session.connect` — whichever the SDK supports).
 3. Receive the SDK's "connected" / "session.welcome" / equivalent ready signal.
 
 Expected outcome: both clients have a `player_id` and a connected WebSocket.

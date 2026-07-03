@@ -22,7 +22,7 @@ curl -X POST http://localhost:8084/api/v1/auth/register \
   -d '{"username":"smoke","password":"smoke1234","display_name":"Smoke"}'
 ```
 
-You should get a `200` with a `player_id` and `session_token`.
+You should get a `200` with a `player_id`, `access_token`, and `refresh_token`. Clients send the `access_token` as a Bearer token (and on the WebSocket `session.connect`); when it expires, `POST /api/v1/auth/refresh` with the `refresh_token` returns a fresh pair.
 
 ## What it does
 
