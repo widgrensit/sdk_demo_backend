@@ -1,6 +1,6 @@
 # SDK Demo Backend
 
-Tiny Lua game running on the [asobi_lua](https://github.com/widgrensit/asobi_lua) Docker image. This is the canonical backend the [Asobi SDK demos](https://github.com/widgrensit/asobi#sdks) point at.
+Tiny Lua game running on the [asobi_lua](https://github.com/widgrensit/asobi_lua) Docker image. This is the canonical backend the [Asobi SDK demos](https://github.com/widgrensit/asobi#sdks) point at, and the repo `asobi init --template backend` fetches when you want a complete, runnable backend to copy from.
 
 It exists so SDK quickstarts have one command (`docker compose up -d`) instead of "install Erlang, install rebar3, run migrations, then run an Erlang shell."
 
@@ -11,6 +11,23 @@ git clone https://github.com/widgrensit/sdk_demo_backend.git
 cd sdk_demo_backend
 docker compose up -d
 ```
+
+Or scaffold a fresh copy with the CLI:
+
+```bash
+asobi init mybackend --template backend
+cd mybackend
+docker compose up -d
+```
+
+## Managed vs local
+
+Two ways to run an Asobi backend, on opposite sides of the credential boundary:
+
+- **Local (this repo).** `docker compose up -d` runs the public `asobi_lua` image against your own Postgres. No account, no keys. Configured entirely by the `ASOBI_*` environment variables in `docker-compose.yml`. This is the honest self-host on-ramp.
+- **Managed (Asobi Cloud).** `asobi login` then `asobi deploy <env> lua` ships just your `lua/` to a hosted, EU-sovereign environment. The platform owns Postgres, TLS, and the runtime config. See [asobi.dev/docs/cloud](https://asobi.dev/docs/cloud).
+
+Same `lua/`, same wire protocol - the only difference is who runs Postgres and holds the config. There is no `sys.config` here on purpose: a compose deployment is tuned through container env vars, not the OTP release config. That file only exists if you build the release from source (see [asobi.dev/docs/self-host](https://asobi.dev/docs/self-host)).
 
 The backend listens on `http://localhost:8084` (HTTP + WebSocket on `/ws`).
 
