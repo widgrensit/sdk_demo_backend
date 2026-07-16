@@ -43,15 +43,21 @@ You should get a `200` with a `player_id`, `access_token`, and `refresh_token`. 
 
 ## What it does
 
-A 2-player demo match called `demo`:
+Players send `{move_x, move_y}` (normalised −1..1) inputs; the server ticks at 10 Hz (every 100 ms) and broadcasts `match.state` with each player's `{x, y}`, then pushes `match.finished` when the match ends. No combat, no boons, no bots — just enough to exercise the auth → matchmake → match.state → input → match.finished flow across every SDK.
 
-- 800×600 arena
-- 60 second duration
-- Players send `{move_x, move_y}` (normalised −1..1) inputs
-- Server ticks at 10 Hz (every 100 ms) and broadcasts `match.state` with each player's `{x, y}`
-- Match ends after 60 s, server pushes `match.finished`
+## Game modes
 
-No combat, no boons, no bots — just enough to exercise the auth → matchmake → match.state → input → match.finished flow across every SDK.
+`lua/config.lua` is the game-mode manifest: it maps a mode name to the match script that runs it. The client picks one with `matchmaker.add {mode: "demo"}`, and each script sets its own config (`match_size`, arena size, duration) as globals — so adding a mode is one manifest line plus one script.
+
+```lua
+-- lua/config.lua
+return {
+    demo  = "match.lua",   -- 2 players, 800×600 arena, 60 s
+    party = "party.lua"    -- 4 players, 1200×900 arena, 90 s
+}
+```
+
+Both modes run the identical movement loop; they differ only in the config their script declares. To add a third, drop a `mymode.lua` in `lua/` and add `mymode = "mymode.lua"` to the manifest.
 
 For a richer reference see [asobi_arena_lua](https://github.com/widgrensit/asobi_arena_lua), which implements the full arena shooter (boons, modifiers, bots, voting) on the same runtime.
 
@@ -61,7 +67,7 @@ Identical to every Asobi backend — see the [WebSocket protocol guide](https://
 
 Relevant events for this demo:
 
-- Client `matchmaker.add` `{mode: "demo"}`
+- Client `matchmaker.add` `{mode: "demo"}` (or `{mode: "party"}`)
 - Server push `match.matched` `{match_id, players}`
 - Client `match.input` `{move_x, move_y}` (each is a number in [−1, 1])
 - Server push `match.state` `{tick, elapsed_ms, players: {pid: {x, y}}}` every 100 ms
@@ -73,8 +79,9 @@ Relevant events for this demo:
 sdk_demo_backend/
 ├── docker-compose.yml   # asobi_lua image + Postgres on port 8084
 ├── lua/
-│   ├── config.lua       # game-mode manifest
-│   └── match.lua        # the entire demo (~80 lines)
+│   ├── config.lua       # game-mode manifest (demo + party)
+│   ├── match.lua        # "demo" mode — 2 players
+│   └── party.lua        # "party" mode — 4 players
 └── README.md
 ```
 
