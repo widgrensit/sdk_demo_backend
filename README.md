@@ -53,11 +53,14 @@ Players send `{move_x, move_y}` (normalised −1..1) inputs; the server ticks at
 -- lua/config.lua
 return {
     demo  = "match.lua",   -- 2 players, 800×600 arena, 60 s
-    party = "party.lua"    -- 4 players, 1200×900 arena, 90 s
+    party = "party.lua",   -- 4 players, 1200×900 arena, 90 s
+    echo  = "echo.lua"     -- 1 player, game.send round-trip
 }
 ```
 
-Both modes run the identical movement loop; they differ only in the config their script declares. To add a third, drop a `mymode.lua` in `lua/` and add `mymode = "mymode.lua"` to the manifest.
+`demo` and `party` run the identical movement loop; they differ only in the config their script declares. `echo` is a single-player mode for SDK `game.send` round-trip smoke tests: `handle_input` echoes `{message}` straight back via `game.send`, and a `{message: "boom"}` input deliberately raises a Lua error so SDKs can also assert `game.error` dispatch end to end (needs `ASOBI_DEV_ERRORS=true`, already set in `docker-compose.yml`).
+
+To add another mode, drop a `mymode.lua` in `lua/` and add `mymode = "mymode.lua"` to the manifest.
 
 For a richer reference see [asobi_arena_lua](https://github.com/widgrensit/asobi_arena_lua), which implements the full arena shooter (boons, modifiers, bots, voting) on the same runtime.
 
@@ -79,9 +82,10 @@ Relevant events for this demo:
 sdk_demo_backend/
 ├── docker-compose.yml   # asobi_lua image + Postgres on port 8084
 ├── lua/
-│   ├── config.lua       # game-mode manifest (demo + party)
+│   ├── config.lua       # game-mode manifest (demo + party + echo)
 │   ├── match.lua        # "demo" mode — 2 players
-│   └── party.lua        # "party" mode — 4 players
+│   ├── party.lua        # "party" mode — 4 players
+│   └── echo.lua         # "echo" mode — 1 player, game.send round-trip
 └── README.md
 ```
 

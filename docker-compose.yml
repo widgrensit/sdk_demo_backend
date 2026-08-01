@@ -37,6 +37,10 @@ services:
       ASOBI_DB_NAME: sdk_demo_backend
       ASOBI_DB_USER: postgres
       ASOBI_DB_PASSWORD: postgres
+      # Lets the "echo" mode's deliberate handle_input error (mode used by
+      # SDK game.send/game.error round-trip smoke tests) reach the client
+      # as a game.error event instead of being log-only.
+      ASOBI_DEV_ERRORS: "true"
 
 volumes:
   pgdata:
