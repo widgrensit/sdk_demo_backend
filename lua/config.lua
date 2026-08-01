@@ -3,5 +3,6 @@
 -- Each script sets its own config (match_size, arena, duration) via globals.
 return {
     demo = "match.lua",
-    party = "party.lua"
+    party = "party.lua",
+    echo = "echo.lua"
 }
