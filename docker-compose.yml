@@ -20,7 +20,17 @@ services:
       start_period: 20s
 
   asobi:
-    image: ghcr.io/widgrensit/asobi_lua:latest
+    # The batteries image published by asobi_bundle: asobi plus every
+    # first-party extension, with the Lua runtime arriving transitively through
+    # asobi itself.
+    #
+    # Was ghcr.io/widgrensit/asobi_lua:latest, which is ARCHIVED. That repo was
+    # retired when the Lua runtime merged into asobi, and its last image was
+    # built 2026-08-06 - so every SDK smoke test running against it was
+    # validating clients against a backend frozen weeks behind the wire they are
+    # written for. A smoke test that cannot see a protocol change is not testing
+    # the protocol.
+    image: ghcr.io/widgrensit/asobi:latest
     restart: on-failure
     depends_on:
       postgres:
